@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Task;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,7 +25,7 @@ class User extends Authenticatable
 
     /**
      * The attributes that should be hidden for arrays.
-     *
+     * 
      * @var array
      */
     protected $hidden = [
@@ -40,4 +41,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+        Relations
+    */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
