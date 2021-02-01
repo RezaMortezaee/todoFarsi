@@ -14,7 +14,9 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::all();
+
+        return response()->json(['data'=> $tasks], 201);
     }
 
     /**
@@ -25,7 +27,15 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $inputs = $request->all();
+
+        $task = Task::create($inputs);
+
+        return response()->json(['data' => $task], 201);
     }
 
     /**
@@ -36,7 +46,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
+        return response()->json(['data'=>$task],201);
     }
 
     /**
@@ -46,9 +56,19 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => ['required | string']
+        ]);
+
+        $task = Task::findOrFail($id);
+
+        $inputs = $request->all();
+
+        $task->fill($inputs)->save();
+
+        return response()->json(['data' => $task], 201);
     }
 
     /**
@@ -59,6 +79,10 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        return response()->json([
+            'data' => $task
+        ],
+             201
+        );
     }
 }

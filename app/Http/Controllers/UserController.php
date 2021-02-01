@@ -14,9 +14,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        // $users = User::all();
+        $users = User::with(Task::class)->all();
 
-        // return $users;
+        return $users;
     }
 
     /**
@@ -27,7 +27,17 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'min:3'],
+            'email' => ['unique:users', 'email'],
+            'password' => ['password', 'min:6'],
+        ]);
+
+        $input = $request->all();
+
+        $user = User::create($input);
+
+        return response()->json(['data' => $user], 201);
     }
 
     /**
@@ -38,7 +48,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return response()->json(['data' => $user], 200);
     }
 
     /**
@@ -48,9 +58,21 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'min:3'],
+            'email' => ['unique:users', 'email'],
+            'password' => ['password', 'min:6'],
+        ]);
+
+        $users = User::findOrFail($id);
+
+        $inputs = $request->all();
+
+        $users->fill($inputs)->save();
+
+        return response()->json(['data' => $users], 201);
     }
 
     /**
@@ -61,6 +83,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        return response()->json(['data' => $user], 200);
     }
 }
