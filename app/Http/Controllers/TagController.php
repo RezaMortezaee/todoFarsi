@@ -3,82 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use Illuminate\Http\Request;
+use App\Http\Requests\TagRequest;
+use App\Http\Resources\TagResource;
+use App\Http\Resources\TagResourceCollection;
 
-class TagController extends Controller
+class TagController extends ApiController
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * INDEX
      */
     public function index()
     {
-        $tags = Tag::all();
+        $tags = new TagResourceCollection(Tag::all());
 
-        return response()->json(['data'=>$tags], 201);
+        return $this->showAll($tags);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        $inputs = $request->all();
-
-        $tag = Tag::create($inputs);
-
-        return response()->json(['data' => $tag], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
+     *  SHOW
      */
     public function show(Tag $tag)
     {
-        return response()->json(['data'=> $tag], 201);
+        $tag = new TagResource($tag);
+
+        return $this->showOne($tag);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
+     * STORE
      */
-    public function update(Request $request, Tag $tag)
+    public function store(TagRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string']
-        ]);
-
-        $tags = Tag::findOrFail($tag);
+        $request->validated();
 
         $inputs = $request->all();
 
-        $tags->fill($inputs)->save();
+        $inputs['name'] = $request->name;
 
-        return response()->json(['data' => $tags], 201);
+        $tag = new TagResource(Tag::create($inputs));
+
+        return $this->showOne($tag, 201);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
+     * UPDATE
+     */
+    public function update(TagRequest $request, Tag $tag)
+    {
+        $request->validated();
+
+        $inputs = $request->all();
+
+        $inputs['name'] = $request->name;
+
+        $tag = new TagResource($tag);
+
+        $tag->update($inputs);
+
+        return $this->showOne($tag, 201);
+    }
+
+    /**
+     *  DESTROY
      */
     public function destroy(Tag $tag)
     {
-        return response()->json(['data' => $tag], 201);
+        $tag = new TagResource($tag);
+
+        $tag->delete();
+
+        return $this->showOne($tag);
     }
 }

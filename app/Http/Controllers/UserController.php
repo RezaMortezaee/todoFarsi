@@ -3,88 +3,83 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\UserResourceCollection;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * INDEX
      */
     public function index()
     {
-        $users = User::with(Task::class)->all();
+        $users = new UserResourceCollection(User::all());
 
-        return $users;
+        return $this->showAll($users);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'min:3'],
-            'email' => ['unique:users', 'email'],
-            'password' => ['password', 'min:6'],
-        ]);
-
-        $input = $request->all();
-
-        $user = User::create($input);
-
-        return response()->json(['data' => $user], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     *  SHOW
      */
     public function show(User $user)
     {
-        return response()->json(['data' => $user], 200);
+        $user = new UserResource($user);
+
+        return $this->showOne($user);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     *  STORE
      */
-    public function update(Request $request, $id)
+    public function store(UserRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'min:3'],
-            'email' => ['unique:users', 'email'],
-            'password' => ['password', 'min:6'],
-        ]);
-
-        $users = User::findOrFail($id);
+        $request->validated();
 
         $inputs = $request->all();
 
-        $users->fill($inputs)->save();
+        $inputs['name'] = $request->name;
 
-        return response()->json(['data' => $users], 201);
+        $inputs['email'] = $request->email;
+
+        $inputs['password'] = $request->bcrypt('${1:my-secret-password');
+
+        $user = new UserResource(User::create($inputs));
+
+        return $this->showOne($user, 201);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * UPDATE
      */
+    public function update(UserRequest $request, User $user)
+    {
+        $request->validated();
+
+        $inputs = $request->all();
+
+        $inputs['name'] = $request->name;
+
+        $inputs['email'] = $request->email;
+
+        $inputs['password'] = $request->bcrypt('${1:my-secret-password');
+
+        $user = new UserResource($user);
+
+        $user->update($inputs);
+
+        return $this->showOne($user, 201);
+    }
+
+     /**
+      *  DESTROY
+      */
     public function destroy(User $user)
     {
+        $user = new UserResource($user);
+
         $user->delete();
 
-        return response()->json(['data' => $user], 200);
+        return$this->showOne($user);
     }
 }

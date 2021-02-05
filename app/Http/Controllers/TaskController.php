@@ -3,86 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest;
+use App\Http\Resources\TaskResource;
+use App\Http\Resources\TaskResourceCollection;
 
-class TaskController extends Controller
+class TaskController extends ApiController
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * INDEX
      */
     public function index()
     {
-        $tasks = Task::all();
+        $tasks = new TaskResourceCollection(Task::all());
 
-        return response()->json(['data'=> $tasks], 201);
+        return $this->showAll($tasks);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        $inputs = $request->all();
-
-        $task = Task::create($inputs);
-
-        return response()->json(['data' => $task], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     *  SHOW
      */
     public function show(Task $task)
     {
-        return response()->json(['data'=>$task],201);
+        $task = new TaskResource($task);
+
+        return $this->showOne($task);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * STORE
      */
-    public function update(Request $request, $id)
+    public function store(TaskRequest $request, Task $task)
     {
-        $request->validate([
-            'name' => ['required | string']
-        ]);
-
-        $task = Task::findOrFail($id);
+        $request->validated();
 
         $inputs = $request->all();
 
-        $task->fill($inputs)->save();
+        $inputs['name'] = $request->name;
 
-        return response()->json(['data' => $task], 201);
+        $task = new TaskResource(Task::create($inputs));
+
+        return $this->showOne($task, 201);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * UPDATE
+     */
+    public function update(TaskRequest $request, Task $task)
+    {
+        $request->validated();
+
+        $inputs = $request->all();
+
+        $inputs['name'] = $request->name;
+
+        $task = new TaskResource($task);
+
+        $task->update($inputs);
+
+        return $this->showOne($task);
+    }
+
+    /**
+     *  DESTROY
      */
     public function destroy(Task $task)
     {
-        return response()->json([
-            'data' => $task
-        ],
-             201
-        );
+        $task = new TaskResource($task);
+
+        $task->delete();
+
+        return $this->showOne($task);
     }
 }
