@@ -2,11 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagTaskController;
+use App\Http\Controllers\UserTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::resource('/v1/tasks', TaskController::class);
 
 Route::resource('/v1/tags', TagController::class);
 
-Route::get('/v1/user-task', [UserTaskController::class, 'index']);
+Route::resource('/v1/projects', ProjectController::class);
 
 Route::get('/v1/tag-task', [TagTaskController::class, 'index']);
+
+Route::get('/v1/user-task', [UserTaskController::class, 'index']);
+

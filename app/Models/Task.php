@@ -12,7 +12,22 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name'];
+
+    /**
+     * Methods
+     */
+
+    public function setNameAttribute($name)
+    {
+        $this->attributes['name'] = strtolower($name);
+    }
+
+    public function getNameAttribute($name)
+    {
+        $this->attributes['name'] = ucfirst($name);
+    }
 
     /**
       Relations
@@ -25,5 +40,10 @@ class Task extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function project ()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

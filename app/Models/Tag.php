@@ -13,6 +13,19 @@ class Tag extends Model
     protected $fillable = ['name'];
 
     /**
+     * Methods
+     */
+    public function setNameAttribute($name)
+    {
+        $this->attributes['name'] = strtolower($name);
+    }
+
+    public function getNameAttribute($name)
+    {
+        $this->attributes['name'] = ucfirst($name);
+    }
+
+    /**
       Relations
      */
     public function tasks()

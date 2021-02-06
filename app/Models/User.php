@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Project;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -62,6 +63,32 @@ class User extends Authenticatable
     ];
 
     /**
+     * Methods
+     */
+
+    #Name
+    public function setNameAttribute($name)
+    {
+        $this->attributes['name'] = strtolower($name);
+    }
+
+    public function getNameAttribute($name)
+    {
+        return ucwords($name);
+    }
+
+    #Email
+    public function setEmailAttribute($email)
+    {
+        $this->attributes['email'] = $email;
+    }
+
+    public function getEmailAttribute($email)
+    {
+        return $this->attributes['email'] = strtolower($email);
+    }
+
+    /**
         Relations
      */
     public function tasks()
@@ -69,4 +96,8 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }
