@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->timestamps();
 
             $table->foreignId('current_team_id')->nullable();
-            $table->foreignId('task_id');
+            $table->foreignId('task_id')->nullable();
         });
     }
 
