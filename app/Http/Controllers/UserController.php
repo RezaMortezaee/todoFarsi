@@ -9,6 +9,7 @@ use App\Http\Resources\UserResourceCollection;
 
 class UserController extends ApiController
 {
+
     /**
      * INDEX
      */

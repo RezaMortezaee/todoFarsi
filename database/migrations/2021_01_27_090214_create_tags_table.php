@@ -14,20 +14,27 @@ class CreateTagsTable extends Migration
     public function up()
     {
         Schema::create('tags', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id('id');
             $table->string('name');
             $table->timestamps();
         });
 
 
         Schema::create('tag_task', function (Blueprint $table) {
-            $table->integer('tag_id')->unsigned()->index();
-            $table->foreign('tag_id')->references('id')->on('tags')->onUpdate('cascade');
-
-            $table->integer('task_id')->unsigned()->index();
-            $table->foreign('task_id')->references('id')->on('tasks')->onUpdate('cascade');
-
             $table->primary(['tag_id', 'task_id']);
+            $table->foreignId('tag_id');
+            $table->foreignId('task_id');
+
+            $table->foreign('tag_id')
+                  ->references('id')
+                  ->on('tags')
+                  ->onUpdate('cascade')->onDelete('cascade');
+
+            $table->foreign('task_id')
+                  ->references('id')
+                  ->on('tasks')
+                  ->onUpdate('cascade')->onDelete('cascade');
+
         });
     }
 
